@@ -307,7 +307,7 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 		evt.preventDefault();
 		if (stopPropagation) evt.stopPropagation();
 		$timeout.cancel(leaveTimeout);
-		activateDropZone();
+		activateDropZone(evt);
 	}, false);
 	elem[0].addEventListener('dragenter', function(evt) {
 		evt.preventDefault();
@@ -341,7 +341,7 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 		}, scope.allowDir() != false, attr['multiple'] || scope.multiple() || attr['ngMultiple'] == 'true');
 	}, false);
 	
-    function activateDropZone()
+    function activateDropZone(evt)
     {
         if (!scope.actualDragOverClass) {
 			scope.actualDragOverClass = calculateDragOverClass(scope, attr, evt);
