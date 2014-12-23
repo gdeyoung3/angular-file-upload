@@ -259,7 +259,8 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', '$location', f
 		stopPropagation: '&stopPropagation',
 		hideOnDropNotAvailable: '&hideOnDropNotAvailable',
 		multiple: '&ngMultiple',
-		accept: '&ngAccept'
+		accept: '&ngAccept',
+        isDropping: '=isDropping'
 	},
 	link: function(scope, elem, attr, ngModel) {
 		handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location);
@@ -306,10 +307,7 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 		evt.preventDefault();
 		if (stopPropagation) evt.stopPropagation();
 		$timeout.cancel(leaveTimeout);
-		if (!scope.actualDragOverClass) {
-			scope.actualDragOverClass = calculateDragOverClass(scope, attr, evt);
-		}
-		elem.addClass(scope.actualDragOverClass);
+		activateDropZone();
 	}, false);
 	elem[0].addEventListener('dragenter', function(evt) {
 		evt.preventDefault();
@@ -317,8 +315,7 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 	}, false);
 	elem[0].addEventListener('dragleave', function(evt) {
 		leaveTimeout = $timeout(function() {
-			elem.removeClass(scope.actualDragOverClass);
-			scope.actualDragOverClass = null;
+			deactivateDropZone();
 		}, dragOverDelay || 1);
 	}, false);
 	if (attr['ngFileDrop'] != '') {
@@ -327,8 +324,7 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 	elem[0].addEventListener('drop', function(evt) {
 		evt.preventDefault();
 		if (stopPropagation) evt.stopPropagation();
-		elem.removeClass(scope.actualDragOverClass);
-		scope.actualDragOverClass = null;
+		deactivateDropZone();
 		extractFiles(evt, function(files, rejFiles) {
 			if (ngModel) {
 				scope.fileModel = files;
@@ -345,6 +341,22 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 		}, scope.allowDir() != false, attr['multiple'] || scope.multiple() || attr['ngMultiple'] == 'true');
 	}, false);
 	
+    function activateDropZone()
+    {
+        if (!scope.actualDragOverClass) {
+			scope.actualDragOverClass = calculateDragOverClass(scope, attr, evt);
+		}
+		elem.addClass(scope.actualDragOverClass);
+        scope.isDropping = true;
+    }
+    
+    function deactivateDropZone()
+    {
+        elem.removeClass(scope.actualDragOverClass);
+        scope.actualDragOverClass = null;
+        scope.isDropping = false;
+    }
+    
 	function calculateDragOverClass(scope, attr, evt) {
 		var valid = true;
 		if (regexp) {
