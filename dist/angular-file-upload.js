@@ -347,14 +347,18 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 			scope.actualDragOverClass = calculateDragOverClass(scope, attr, evt);
 		}
 		elem.addClass(scope.actualDragOverClass);
-        scope.isDropping = true;
+        $timeout(function () {
+            scope.isDropping = true;
+        });
     }
     
     function deactivateDropZone()
     {
         elem.removeClass(scope.actualDragOverClass);
         scope.actualDragOverClass = null;
-        scope.isDropping = false;
+        $timeout(function () {
+            scope.isDropping = false;
+        });
     }
     
 	function calculateDragOverClass(scope, attr, evt) {
