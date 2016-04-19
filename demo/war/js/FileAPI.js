@@ -3468,75 +3468,73 @@
 					}
 					while( (node = node.parentNode) && (node !== document.body) );
 				},
-				
-				disableMouseover: false,
+
 
 				mouseover: function (evt){
-					if (!flash.disableMouseover) {
-						var target = api.event.fix(evt).target;
-	
-						if( /input/i.test(target.nodeName) && target.type == 'file' && !target.disabled ){
-							var
-								  state = target.getAttribute(_attr)
-								, wrapper = flash.getWrapper(target)
-							;
-	
-							if( api.multiFlash ){
-								// check state:
-								//   i — published
-								//   i — initialization
-								//   r — ready
-								if( state == 'i' || state == 'r' ){
-									// publish fail
-									return	false;
-								}
-								else if( state != 'p' ){
-									// set "init" state
-									target.setAttribute(_attr, 'i');
-	
-									var dummy = document.createElement('div');
-	
-									if( !wrapper ){
-										api.log('[err] FlashAPI.mouseover: js-fileapi-wrapper not found');
-										return;
-									}
-	
-									_css(dummy, {
-										  top:    0
-										, left:   0
-										, width:  target.offsetWidth
-										, height: target.offsetHeight
-										, zIndex: 1e6+'' // set max zIndex
-										, position: 'absolute'
-									});
-	
-									wrapper.appendChild(dummy);
-									flash.publish(dummy, api.uid());
-	
-									// set "publish" state
-									target.setAttribute(_attr, 'p');
-								}
-	
-								return	true;
+					var target = api.event.fix(evt).target;
+
+					if( /input/i.test(target.nodeName) && target.type == 'file' && !target.disabled ){
+						var
+							  state = target.getAttribute(_attr)
+							, wrapper = flash.getWrapper(target)
+						;
+
+						if( api.multiFlash ){
+							// check state:
+							//   i — published
+							//   i — initialization
+							//   r — ready
+							if( state == 'i' || state == 'r' ){
+								// publish fail
+								return	false;
 							}
-							else if( wrapper ){
-								// Use one flash element
-								var box = _getDimensions(wrapper);
-								_css(flash.getEl(), box);
-	
-								// Set current input
-								flash.curInp = target;
+							else if( state != 'p' ){
+								// set "init" state
+								target.setAttribute(_attr, 'i');
+
+								var dummy = document.createElement('div');
+
+								if( !wrapper ){
+									api.log('[err] FlashAPI.mouseover: js-fileapi-wrapper not found');
+									return;
+								}
+
+								_css(dummy, {
+									  top:    0
+									, left:   0
+									, width:  target.offsetWidth
+									, height: target.offsetHeight
+									, zIndex: 1e6+'' // set max zIndex
+									, position: 'absolute'
+								});
+
+								wrapper.appendChild(dummy);
+								flash.publish(dummy, api.uid());
+
+								// set "publish" state
+								target.setAttribute(_attr, 'p');
 							}
+
+							return	true;
 						}
-						else if( !/object|embed/i.test(target.nodeName) ){
-							_css(flash.getEl(), { top: 1, left: 1, width: 5, height: 5 });
+						else if( wrapper ){
+							// Use one flash element
+							var box = _getDimensions(wrapper);
+
+							_css(flash.getEl(), box);
+
+							// Set current input
+							flash.curInp = target;
 						}
+					}
+					else if( !/object|embed/i.test(target.nodeName) ){
+						_css(flash.getEl(), { top: 1, left: 1, width: 5, height: 5 });
 					}
 				},
 
 				onEvent: function (evt){
 					var type = evt.type;
-					
+
 					if( type == 'ready' ){
 						try {
 							// set "ready" state
@@ -3561,12 +3559,8 @@
 						}, 1);
 					}
 				},
-				mouseDown: function(evt) {
-					flash.disableMouseover = true;
-				},
-				cancel: function(evt) {
-					flash.disableMouseover = false;
-				},
+
+
 				mouseenter: function (evt){
 					var node = flash.getInput(evt.flashId);
 
@@ -3615,35 +3609,32 @@
 
 
 				select: function (evt){
-					try {
-						var
-							  inp = flash.getInput(evt.flashId)
-							, uid = api.uid(inp)
-							, files = evt.target.files
-							, event
-						;
-						_each(files, function (file){
-							api.checkFileObj(file);
-						});
-	
-						_files[uid] = files;
-	
-						if( document.createEvent ){
-							event = document.createEvent('Event');
-							event.files = files;
-							event.initEvent('change', true, true);
-							inp.dispatchEvent(event);
-						}
-						else if( jQuery ){
-							jQuery(inp).trigger({ type: 'change', files: files });
-						}
-						else {
-							event = document.createEventObject();
-							event.files = files;
-							inp.fireEvent('onchange', event);
-						}
-					} finally {
-						flash.disableMouseover = false;
+					var
+						  inp = flash.getInput(evt.flashId)
+						, uid = api.uid(inp)
+						, files = evt.target.files
+						, event
+					;
+
+					_each(files, function (file){
+						api.checkFileObj(file);
+					});
+
+					_files[uid] = files;
+
+					if( document.createEvent ){
+						event = document.createEvent('Event');
+						event.files = files;
+						event.initEvent('change', true, true);
+						inp.dispatchEvent(event);
+					}
+					else if( jQuery ){
+						jQuery(inp).trigger({ type: 'change', files: files });
+					}
+					else {
+						event = document.createEventObject();
+						event.files = files;
+						inp.fireEvent('onchange', event);
 					}
 				},
 
@@ -3705,15 +3696,13 @@
 								if( !file.__info ){
 									var defer = file.__info = api.defer();
 
-//									flash.cmd(file, 'getFileInfo', {
-//										  id: file.id
-//										, callback: _wrap(function _(err, info){
-//											_unwrap(_);
-//											defer.resolve(err, file.info = info);
-//										})
-//									});
-									defer.resolve(null, file.info = null);
-
+									flash.cmd(file, 'getFileInfo', {
+										  id: file.id
+										, callback: _wrap(function _(err, info){
+											_unwrap(_);
+											defer.resolve(err, file.info = info);
+										})
+									});
 								}
 
 								file.__info.then(fn);
@@ -3975,7 +3964,6 @@
 					}
 					try { el.style[key] = val; } catch (e) {}
 				}
-				
 			}
 		}
 
@@ -4097,27 +4085,12 @@
 				, body = document.body
 				, docEl = (el && el.ownerDocument).documentElement
 			;
-			
-			function getOffset(obj) {
-			    var left, top;
-			    left = top = 0;
-			    if (obj.offsetParent) {
-			        do {
-			            left += obj.offsetLeft;
-			            top  += obj.offsetTop;
-			        } while (obj = obj.offsetParent);
-			    }
-			    return {
-			        left : left,
-			        top : top
-			    };
-			};
-			
+
 			return {
-				  top:		getOffset(el).top
-				, left:		getOffset(el).left
-				, width:	el.offsetWidth
-				, height:	el.offsetHeight
+				  top:		box.top + (window.pageYOffset || docEl.scrollTop)  - (docEl.clientTop || body.clientTop || 0)
+				, left:		box.left + (window.pageXOffset || docEl.scrollLeft) - (docEl.clientLeft || body.clientLeft || 0)
+				, width:	box.right - box.left
+				, height:	box.bottom - box.top
 			};
 		}
 

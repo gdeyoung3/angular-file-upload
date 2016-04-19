@@ -2,10 +2,6 @@ body {
 	font-family: Helvetica, arial, freesans, clean, sans-serif;	
 }
 
-/* object {
-	border: 3px solid red;
-} */
- 
 .upload-buttons input[type="file"] {	
 	width: 6.3em \0/IE9;
 }
@@ -44,13 +40,9 @@ body {
 
 fieldset {
 	border: 1px solid #DDD;
-	width: 420px;
+	width: 500px;
 	padding: 10px;
-	line-height: 23px;
-}
-
-fieldset label {
-	/*font-size: smaller;*/
+	line-height: 23px;	
 }
 
 .progress {
@@ -73,7 +65,7 @@ fieldset label {
 	text-align: center;
 	padding-top: 25px;
 	float: left;
-	margin-left: 10px;
+	margin-left: 20px;
 }
 
 .up-buttons {

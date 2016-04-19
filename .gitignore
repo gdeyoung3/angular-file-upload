@@ -13,6 +13,4 @@ classes/
 ._*
 /node_modules
 *.jar
-release-local.sh
-npm-debug.log
-/.idea
+release.sh

@@ -21,7 +21,6 @@ public class FileUpload extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		try {
-			req.setCharacterEncoding("utf-8");
 			if (req.getParameter("errorCode") != null) {
 //				res.getWriter().write(req.getParameter("errorMessage"));
 //				res.getWriter().flush();
@@ -46,7 +45,7 @@ public class FileUpload extends HttpServlet {
 					if (item.getName() != null) {
 						sb.append("\"size\":\"").append(size(item.openStream())).append("\"");
 					} else {
-						sb.append("\"value\":\"").append(read(item.openStream()).replace("\"", "'")).append("\"");
+						sb.append("\"value\":\"").append(read(item.openStream())).append("\"");
 					}
 					sb.append("}");
 					if (iterator.hasNext()) {
@@ -69,7 +68,7 @@ public class FileUpload extends HttpServlet {
 				}
 			}
 			sb.append("}}");
-			res.setCharacterEncoding("utf-8");
+			
 			res.getWriter().write(sb.toString());
 		} catch (Exception ex) {
 			throw new ServletException(ex);
@@ -83,9 +82,9 @@ public class FileUpload extends HttpServlet {
 			int size;
 			while ((size = stream.read(buffer)) != -1) {
 				length += size;
-//				 for (int i = 0; i < size; i++) {
-//				 System.out.print((char) buffer[i]);
-//				 }
+				// for (int i = 0; i < size; i++) {
+				// System.out.print((char) buffer[i]);
+				// }
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
